@@ -5,6 +5,12 @@
     {% for message in get_flashed_messages() %}
         <div class="alert alert-danger">{{ message }}</div>
     {% endfor %}
+    <h4 class="howTo">How To Use</h4>
+    <ol>
+        <li>Enter desired original URL into the field (eg. www.youtube.com)</li>
+        <li>Click the "Shorten" button</li>
+        <li>Copy the new shortened link and enter it into browser</li>
+    </ol>
     <form method="post">
     <div class="form-group">
         <label for="url">URL</label>
@@ -14,7 +20,7 @@
     </div>
 
     <div class="form-group">
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">Shorten</button>
     </div>
     </form>
 
