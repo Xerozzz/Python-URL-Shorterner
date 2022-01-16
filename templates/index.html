@@ -2,6 +2,9 @@
 
 {% block content %}
     <h1>{% block title %} Python URL Shortener {% endblock %}</h1>
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
     <form method="post">
     <div class="form-group">
         <label for="url">URL</label>

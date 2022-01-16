@@ -2,6 +2,9 @@
 
 {% block content %}
     <h1>{% block title %} FlaskShortener Statistics {% endblock %}</h1>
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
     <table class="table">
         <thead>
             <tr>
@@ -23,8 +26,8 @@
                     <td>{{ url['created'] }}</td>
                     <td>
                         <form method=POST>
-                            <input type="hidden" value={{ url['id'] }}/>
-                            <input type=submit value=Delete>
+                            <input name="rowId" type="hidden" value="{{ url['id'] }}"/>
+                            <input type="submit" value=Delete>
                         </form>
                     </td>
                 </tr>
