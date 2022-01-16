@@ -24,7 +24,7 @@ def index():
 
         # Makes sure URL exists
         if not url:
-            flash("A URL IS REQUIRED!!!")
+            flash("A URL IS REQUIRED!")
             return redirect(url_for('index'))
 
         # Inserts URL into DB
@@ -71,17 +71,22 @@ def url_redirect(id):
 def stats():
     # Post Request
     if request.method == 'POST':
-        print(request)
+        conn = connect_db()
+        # print(request.form['rowId'])
+        rowId = request.form['rowId']
+        db_urls = conn.execute('DELETE from urls WHERE id = ?', rowId)
+        conn.commit()
+        conn.close()
+        flash("Link Deleted!")
 
     # Get Request
-    if request.method == 'GET':
-        conn = connect_db()
-        db_urls = conn.execute('SELECT id, created, original_url, clicks FROM urls'
-                               ).fetchall()
-        conn.close()
-        urls = []
-        for url in db_urls:
-            url = dict(url)
-            url['short_url'] = request.host_url + hashids.encode(url['id'])
-            urls.append(url)
-        return render_template('stats.html', urls=urls)
+    conn = connect_db()
+    db_urls = conn.execute('SELECT id, created, original_url, clicks FROM urls'
+                           ).fetchall()
+    conn.close()
+    urls = []
+    for url in db_urls:
+        url = dict(url)
+        url['short_url'] = request.host_url + hashids.encode(url['id'])
+        urls.append(url)
+    return render_template('stats.html', urls=urls)
