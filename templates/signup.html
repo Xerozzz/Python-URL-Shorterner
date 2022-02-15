@@ -3,6 +3,9 @@
 {% block content %}
 <div class="column is-4 is-offset-4">
     <h3 class="title">Sign Up</h3>
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
     <div class="box">
         <form method="POST" action="/signup">
             <div class="field">

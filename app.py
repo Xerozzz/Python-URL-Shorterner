@@ -31,10 +31,8 @@ def index():
         # Inserts URL into DB
         url_data = conn.execute(
             'INSERT INTO urls (original_url) VALUES (?)', (url,))
-
         conn.commit()
         conn.close()
-
         # Generates Hash ID and short url
         url_id = url_data.lastrowid
         hashid = hashids.encode(url_id)
@@ -44,7 +42,7 @@ def index():
     return render_template('index.html')
 
 # Route to route to original URL
-@app.route('/<id>') 
+@app.route('/<id>')
 def url_redirect(id):
     conn = connect_db()
 
@@ -105,17 +103,20 @@ def signup():
         email = request.form.get('email')
         username = request.form.get('username')
         password = request.form.get('password')
-        print(email,username,password)
         # Check if email or username already exists
         try:
             conn = connect_db()
             conn.execute("INSERT into users (email, username, password) VALUES (?, ?, ?)",(email,username,password))
+            conn.commit()
             conn.close()
         except sqlite3.Error as err:
-            logger.error(err.message)
-            console.log(err)
+            if "username" in str(err):
+                flash("Username already used! Try another or login!")
+            elif "email" in str(err):
+                flash("Email already used! Try another or login!")
+            else:
+                flash("Oops. Something went wrong, please try again. If the issue persists, please contact support")
     conn = connect_db()
     data = conn.execute("SELECT * from users").fetchall()
     conn.close()
-    print(data)
     return render_template('signup.html')
