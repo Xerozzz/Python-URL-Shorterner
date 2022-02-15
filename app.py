@@ -1,9 +1,10 @@
 import sqlite3
 from hashids import Hashids
 from flask import Flask, render_template, request, flash, redirect, url_for
+from werkzeug.security import generate_password_hash, check_password_hash
 
-
-def connect_db():  # Connection to DB
+# Connect to DB
+def connect_db():
     conn = sqlite3.connect('database.db')
     conn.row_factory = sqlite3.Row
     return conn
@@ -13,7 +14,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'mysecret'  # TO BE EDITED, MININUM 4 CHARACTERS
 hashids = Hashids(min_length=4, salt=app.config['SECRET_KEY'])
 
-
+# Route to home/index page
 @app.route('/', methods=('GET', 'POST'))  # Route to create URL + Home Page
 def index():
     # Connect to DB
@@ -42,8 +43,8 @@ def index():
         return render_template('index.html', short_url=short_url)
     return render_template('index.html')
 
-
-@app.route('/<id>')  # Route to redirect to original URL
+# Route to route to original URL
+@app.route('/<id>') 
 def url_redirect(id):
     conn = connect_db()
 
@@ -66,7 +67,7 @@ def url_redirect(id):
         flash('Invalid URL')
         return redirect(url_for('index'))
 
-
+# Route for statistics page
 @app.route('/stats', methods=('GET', 'POST'))    # Route to statistics page
 def stats():
     # Post Request
@@ -90,3 +91,31 @@ def stats():
         url['short_url'] = request.host_url + hashids.encode(url['id'])
         urls.append(url)
     return render_template('stats.html', urls=urls)
+
+# Route for login page and function
+@app.route("/login", methods=('GET', 'POST'))
+def login():
+    return render_template('login.html')
+
+# Route for signup page and function
+@app.route("/signup", methods=('GET', 'POST'))
+def signup():
+    if request.method == 'POST':
+        # Get sign up form data
+        email = request.form.get('email')
+        username = request.form.get('username')
+        password = request.form.get('password')
+        print(email,username,password)
+        # Check if email or username already exists
+        try:
+            conn = connect_db()
+            conn.execute("INSERT into users (email, username, password) VALUES (?, ?, ?)",(email,username,password))
+            conn.close()
+        except sqlite3.Error as err:
+            logger.error(err.message)
+            console.log(err)
+    conn = connect_db()
+    data = conn.execute("SELECT * from users").fetchall()
+    conn.close()
+    print(data)
+    return render_template('signup.html')
