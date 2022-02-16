@@ -13,7 +13,6 @@ def connect_db():
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'mysecret'  # TO BE EDITED, MININUM 4 CHARACTERS
 hashids = Hashids(min_length=4, salt=app.config['SECRET_KEY'])
-
 # Route to home/index page
 @app.route('/', methods=('GET', 'POST'))  # Route to create URL + Home Page
 def index():
@@ -93,6 +92,21 @@ def stats():
 # Route for login page and function
 @app.route("/login", methods=('GET', 'POST'))
 def login():
+    if request.method == 'POST':
+        # Get sign up form data
+        email = request.form.get('email')
+        password = request.form.get('password')
+        # Check if email or username already exists
+        conn = connect_db()
+        url_data = conn.execute("SELECT * from users where email = ?",(email,)).fetchone()
+        conn.close()
+        if url_data:
+            if check_password_hash(url_data[4], password):
+                flash("Logged in!")
+            else:
+                flash("Invalid Password!")
+        else:
+            flash("User not found! ")
     return render_template('login.html')
 
 # Route for signup page and function
@@ -102,7 +116,7 @@ def signup():
         # Get sign up form data
         email = request.form.get('email')
         username = request.form.get('username')
-        password = request.form.get('password')
+        password = generate_password_hash(request.form.get('password'), method="sha256")
         # Check if email or username already exists
         try:
             conn = connect_db()
@@ -111,12 +125,9 @@ def signup():
             conn.close()
         except sqlite3.Error as err:
             if "username" in str(err):
-                flash("Username already used! Try another or login!")
+                flash("Username already used!")
             elif "email" in str(err):
-                flash("Email already used! Try another or login!")
+                flash("Email already used!")
             else:
                 flash("Oops. Something went wrong, please try again. If the issue persists, please contact support")
-    conn = connect_db()
-    data = conn.execute("SELECT * from users").fetchall()
-    conn.close()
     return render_template('signup.html')
