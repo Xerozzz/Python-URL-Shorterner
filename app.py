@@ -118,7 +118,7 @@ def login():
                 if check_password_hash(url_data[4], password):
                     session['userid'] = url_data[0]
                     session['username'] = url_data[2]
-                    return redirect(url_for('home'), logged_in=True)
+                    return redirect(url_for('home'))
                 else:
                     flash("Invalid Password!")
             else:
