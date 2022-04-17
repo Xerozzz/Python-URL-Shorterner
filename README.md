@@ -6,6 +6,8 @@ It uses Hashids to generate unique and unpredictable strings for URLs. Data used
 
 I might modify this in the future to allow customizable links (eg. <domain>/mywebsite) but for now this works well for a local link shortener.
 
+<b>NOTE:</b> This repo is no longer maintained. The app still works but it wil no longer be updated.
+
 ## Installation
 
 Pre-requisites:
